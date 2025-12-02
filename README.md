@@ -15,6 +15,16 @@ Welcome to Podcast Studio, a self-contained web-based application that leverages
 
 </div>
 
+## 🎧 Audio Samples
+
+Listen to these examples generated completely by Podcast Studio:
+
+- 🇺🇸 **English Sample:**
+<br>[![Play](https://img.shields.io/badge/Play_Audio-100000?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/user-attachments/files/23892319/podcast_the_ai_behind_the_mic__exploring_podcast_studio.mp3)</br>
+- 🇮🇹 **Italian Sample:**
+<br>[![Play](https://img.shields.io/badge/Play_Audio-100000?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/user-attachments/files/23892377/podcast_l_ia_dietro_il_microfono__esplorando_podcast_studio.mp3)</br>
+
+
 ## ✨ Key Features
 
 - **AI Script Writing & Enhancement:**
