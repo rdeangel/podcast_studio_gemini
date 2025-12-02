@@ -8,7 +8,7 @@ Welcome to Podcast Studio, a self-contained web-based application that leverages
 
   <h1>Built with AI Studio and Antigravity</h2>
 
-  <a href="https://ai.studio/apps/drive/1etRpxkEesgJEQ1h75CYtxplnWHuMEpsq?fullscreenApplet=true">Open and use with AI Studio with Free development tier (without api key)</a>
+  <a href="https://ai.studio/apps/drive/15vH6mcvMcz29Sn-LqR_R_CUX3kqgIjaV?fullscreenApplet=true">Open and use with AI Studio with Free development tier (without api key)</a>
   <p>OR</p>
   <a href="https://github.com/rdeangel/podcast_studio_gemini/blob/main/index.html">Download and open index.html file in the browser!</a>
   <br>(you need enter your own api key in the web app to use it from the browser)</br>
@@ -152,7 +152,11 @@ This application can be run in two primary environments: within Google AI Studio
 
 ## 📁 File Structure
 
--   `index.html`: The main application file.
--   `metadata.json`: Project configuration.
+-   `index.html`: The main application file (contains all logic and UI).
+-   `metadata.json`: Project configuration for AI Studio.
 -   `README.md`: Documentation.
 -   `RELEASE_NOTES.md`: Version history.
+-   `package.json`: Project dependencies and scripts.
+-   `vite.config.ts`: Vite build configuration.
+-   `tsconfig.json`: TypeScript configuration.
+-   `.gitignore`: Git ignore rules.
