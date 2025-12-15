@@ -18,9 +18,10 @@ Welcome to Podcast Studio, a self-contained web-based application that leverages
 ---
 
 <div align="center">
-**💖 If you find this helps you **
-</br>
-<a href="https://buymeacoffee.com/rdeangel" target="_blank" title="Support InstradaOGM Development">
+💖 If you find this helps you
+</br></br>
+<a href="https://buymeacoffee.com/rdeangel" target="_blank" 
+title="Support InstradaOGM Development">
   <img src="buy_me_a_coffee.png" alt="Buy Me a Coffee" width="130">
 </a>
 </div>
@@ -182,5 +183,6 @@ This application can be run in two primary environments: within Google AI Studio
 -   `vite.config.ts`: Vite build configuration.
 -   `tsconfig.json`: TypeScript configuration.
 -   `.gitignore`: Git ignore rules.
+
 
 
