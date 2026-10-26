@@ -7,7 +7,7 @@
 #### ✨ Core Features
 
 **AI-Powered Script Creation**
-- **Write with AI:** Generate complete podcast scripts from simple prompts using Gemini 2.5 Flash, Gemini 2.5 Pro, or Gemini 3.0 Pro
+- **Write with AI:** Generate complete podcast scripts from simple prompts using Gemini 3.8 Flash, Gemini 3.1 Pro, Gemini 3.5 Flash Lite, Gemini 2.5 Flash, or Gemini 2.5 Pro
 - **Podcastify:** Transform any text (articles, notes, documents) into engaging conversational scripts
 - **Script Translation:** Translate scripts into 80+ languages while preserving speaker formatting and automatically updating speaker instructions
 - **Improve Script:** Enhance clarity, flow, and engagement automatically
@@ -22,7 +22,7 @@
 - Voice randomization with duplicate prevention
 
 **Audio Generation**
-- **TTS Models:** Choose between Gemini 2.5 Pro (High Quality) or Gemini 2.5 Flash (Faster)
+- **TTS Models:** Choose between Gemini 3.8 Flash TTS (Fast & Expressive), Gemini 3.8 Flash-Lite TTS (Lightweight), Gemini 2.5 Pro TTS (High Quality), or Gemini 2.5 Flash TTS (Faster)
 - **Processing Modes:**
   - Line-by-Line: Robust mode supporting up to 10 speakers
   - Multi-Speaker: Faster mode for 2-speaker dialogues with natural pacing

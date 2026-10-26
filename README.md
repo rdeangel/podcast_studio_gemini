@@ -41,7 +41,7 @@ Listen to these examples generated completely by Podcast Studio:
 ## ✨ Key Features
 
 - **AI Script Writing & Enhancement:**
-    - **✍️ Write with AI:** Generate a complete podcast script from a simple prompt using models like **Gemini 2.5 Flash**, **Gemini 2.5 Pro**, or **Gemini 3.0 Pro**.
+    - **✍️ Write with AI:** Generate a complete podcast script from a simple prompt using models like **Gemini 3.8 Flash**, **Gemini 3.1 Pro**, **Gemini 3.5 Flash Lite**, **Gemini 2.5 Flash**, or **Gemini 2.5 Pro**.
     - **📖 Podcastify:** Convert any block of text (like an article or notes) into a conversational script.
     - **🌐 Translate Script:** Instantly translate your script into over 80 languages while preserving speaker assignments and formatting.
     - **✨ Improve Script:** Automatically enhance the clarity, flow, and engagement of your existing script.
@@ -52,7 +52,7 @@ Listen to these examples generated completely by Podcast Studio:
 - **Extensive Voice Library:** Choose from a wide selection of high-quality, pre-built voices to give each speaker a distinct personality. You can preview each voice before selecting it.
 - **Massive Multi-Language Support:** The UI and AI generation can be switched between **over 80 languages and regional dialects** for a truly global and localized experience.
 - **Flexible Audio Generation:**
-    - **TTS Models:** Choose between **Gemini 2.5 Pro** (High Quality) for the best audio experience or **Gemini 2.5 Flash** (Faster) for quick generation.
+    - **TTS Models:** Choose between **Gemini 3.8 Flash TTS** (State-of-the-Art, Fast & Expressive), **Gemini 3.8 Flash-Lite TTS** (Lightweight), **Gemini 2.5 Pro TTS** (High Quality), or **Gemini 2.5 Flash TTS** (Faster).
     - **Processing Modes:**
         - **Line-by-Line:** The most robust method, processing each line individually. Ideal for podcasts with up to 10 speakers.
         - **Multi-Speaker:** A faster mode that processes the entire script in one go for natural pacing (strictly limited to 2 speakers).

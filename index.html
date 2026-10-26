@@ -228,8 +228,10 @@
                         data-i18n-key="tts_model_label">TTS Model</label>
                     <select id="ttsModel"
                         class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-white">
-                        <option value="gemini-2.5-pro-preview-tts" selected>Gemini 2.5 Pro (High Quality)</option>
-                        <option value="gemini-2.5-flash-preview-tts">Gemini 2.5 Flash (Faster)</option>
+                        <option value="gemini-3.8-flash-tts" selected>Gemini 3.8 Flash TTS (Fast & Expressive)</option>
+                        <option value="gemini-3.8-flash-lite-tts">Gemini 3.8 Flash-Lite TTS (Lightweight)</option>
+                        <option value="gemini-2.5-pro-preview-tts">Gemini 2.5 Pro TTS (High Quality)</option>
+                        <option value="gemini-2.5-flash-preview-tts">Gemini 2.5 Flash TTS (Faster)</option>
                     </select>
                 </div>
                 <div>
@@ -345,9 +347,11 @@
                                 data-i18n-key="script_modal_model_label">Select Gemini Model:</label>
                             <select id="geminiModelSelect"
                                 class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                                <option value="gemini-3.8-flash" selected>Gemini 3.8 Flash</option>
+                                <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
+                                <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite</option>
                                 <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                                <option value="gemini-3-pro-preview">Gemini 3.0 Pro</option>
                             </select>
                         </div>
                         <div>
@@ -395,9 +399,11 @@
                                 data-i18n-key="script_modal_model_label">Select Gemini Model:</label>
                             <select id="podcastifyModelSelect"
                                 class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                                <option value="gemini-3.8-flash" selected>Gemini 3.8 Flash</option>
+                                <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
+                                <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite</option>
                                 <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                                <option value="gemini-3-pro-preview">Gemini 3.0 Pro</option>
                             </select>
                         </div>
                         <div>
@@ -1898,7 +1904,16 @@
                 for (let i = 0; i < retries; i++) {
                     try {
                         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal });
-                        if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                        if (!response.ok) {
+                            let detail = "";
+                            try {
+                                const errJson = await response.json();
+                                detail = errJson?.error?.message || JSON.stringify(errJson);
+                            } catch (_) {
+                                try { detail = await response.text(); } catch(__) {}
+                            }
+                            throw new Error(`API request failed with status ${response.status}: ${detail}`);
+                        }
 
                         const result = await response.json();
 
@@ -1944,17 +1959,52 @@
                     voiceConfig: { prebuiltVoiceConfig: { voiceName: pair.voice } }
                 }));
 
+                // Split dialogue into distinct parts with speech_metadata / speechMetadata
+                // Required by modern Gemini TTS models (like gemini-3.8-flash-tts)
+                const lines = processedScriptText.split('\n');
+                const parts = [];
+                const speakerRegex = /^(Speaker[1-9]|Speaker10)\s*:\s*(.*)$/i;
+
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+                    const match = trimmed.match(speakerRegex);
+                    if (match) {
+                        const speakerTag = match[1]; // e.g. Speaker1
+                        const textContent = match[2].trim();
+                        if (textContent) {
+                            parts.push({
+                                text: textContent,
+                                speech_metadata: { speaker: speakerTag },
+                                speechMetadata: { speaker: speakerTag }
+                            });
+                        }
+                    } else if (parts.length > 0) {
+                        // Continuation of previous speaker line
+                        parts[parts.length - 1].text += " " + trimmed;
+                    }
+                }
+
+                // Fallback if parsing produced no structured parts
+                if (parts.length === 0) {
+                    parts.push({
+                        text: processedScriptText,
+                        speech_metadata: { speaker: speakerVoicePairs[0]?.speaker || "Speaker1" },
+                        speechMetadata: { speaker: speakerVoicePairs[0]?.speaker || "Speaker1" }
+                    });
+                }
+
                 const payload = {
                     contents: [{
-                        parts: [{ text: processedScriptText }]
+                        role: "user",
+                        parts: parts
                     }],
                     generationConfig: {
                         responseModalities: ["AUDIO"],
                         speechConfig: {
                             multiSpeakerVoiceConfig: { speakerVoiceConfigs }
                         }
-                    },
-                    model: ttsModel
+                    }
                 };
                 return await callApi(apiUrl, payload, signal);
             }
@@ -2795,13 +2845,44 @@ ${currentScript}`;
                             progressBar.style.width = `${((i + 1) / totalChunks) * 100}%`;
                         }
 
-                        const totalLength = allPcmChunks.reduce((acc, val) => acc + val.length, 0);
+                        // Apply a gentle 15ms fade-in/fade-out to each line chunk to prevent zero-crossing impulse clicks,
+                        // and insert a brief natural pause (250ms silence) between speaker turns.
+                        const pauseSamples = Math.floor(24000 * 0.25); // 250ms natural conversational pause
+                        const fadeSamples = Math.min(360, 24000 * 0.015); // 15ms edge smoothing
+
+                        const processedChunks = allPcmChunks.map((chunk, idx) => {
+                            const smoothed = new Int16Array(chunk.length);
+                            smoothed.set(chunk);
+                            // Smooth start
+                            for (let j = 0; j < Math.min(fadeSamples, smoothed.length); j++) {
+                                smoothed[j] = Math.round(smoothed[j] * (j / fadeSamples));
+                            }
+                            // Smooth end
+                            const startEnd = Math.max(0, smoothed.length - fadeSamples);
+                            for (let j = startEnd; j < smoothed.length; j++) {
+                                const factor = (smoothed.length - 1 - j) / fadeSamples;
+                                smoothed[j] = Math.round(smoothed[j] * factor);
+                            }
+                            return smoothed;
+                        });
+
+                        let totalLength = 0;
+                        processedChunks.forEach((chunk, idx) => {
+                            totalLength += chunk.length;
+                            if (idx < processedChunks.length - 1) {
+                                totalLength += pauseSamples;
+                            }
+                        });
+
                         combinedPcm = new Int16Array(totalLength);
                         let offset = 0;
-                        for (const chunk of allPcmChunks) {
+                        processedChunks.forEach((chunk, idx) => {
                             combinedPcm.set(chunk, offset);
                             offset += chunk.length;
-                        }
+                            if (idx < processedChunks.length - 1) {
+                                offset += pauseSamples; // 250ms silent breath/pause between turns
+                            }
+                        });
                     }
 
                     status.textContent = getTranslatedText('status_create_assembling');
@@ -2881,9 +2962,32 @@ ${currentScript}`;
                 for (let i = 0; i < len; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                // Convert to Int16Array (PCM data)
-                // The data from Gemini is Little Endian 16-bit PCM
-                return new Int16Array(bytes.buffer);
+
+                // Check if audio has a RIFF/WAVE header (Gemini TTS often returns a full WAV container)
+                // If RIFF/WAVE header is present, parse and extract only the raw PCM sample bytes from the data subchunk.
+                // Treating the 44-byte RIFF header and metadata chunks as raw PCM samples introduces audible white noise / static bursts!
+                if (bytes.length >= 12 &&
+                    bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 && // RIFF
+                    bytes[8] === 0x57 && bytes[9] === 0x41 && bytes[10] === 0x56 && bytes[11] === 0x45) { // WAVE
+                    let offset = 12;
+                    while (offset + 8 <= bytes.length) {
+                        const chunkId = String.fromCharCode(bytes[offset], bytes[offset+1], bytes[offset+2], bytes[offset+3]);
+                        const chunkSize = bytes[offset+4] | (bytes[offset+5] << 8) | (bytes[offset+6] << 16) | (bytes[offset+7] << 24);
+                        offset += 8;
+                        if (chunkId === "data") {
+                            const dataLen = Math.min(chunkSize, bytes.length - offset);
+                            const pcmBytes = bytes.subarray(offset, offset + dataLen);
+                            // Ensure 16-bit alignment (even number of bytes)
+                            const alignedLen = pcmBytes.length - (pcmBytes.length % 2);
+                            return new Int16Array(pcmBytes.buffer, pcmBytes.byteOffset, alignedLen / 2);
+                        }
+                        offset += chunkSize;
+                    }
+                }
+
+                // Headerless raw 16-bit Little Endian PCM
+                const alignedLen = bytes.length - (bytes.length % 2);
+                return new Int16Array(bytes.buffer, bytes.byteOffset, alignedLen / 2);
             }
 
             function pcmToWav(pcmData, numChannels, sampleRate) {
