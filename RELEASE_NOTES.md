@@ -1,5 +1,26 @@
 ### Podcast Studio Release Notes 🎙️
 
+## Version 1.2 (October 2026)
+
+### 🛡️ Full-Stack Server-Side Architecture & Deployment Hardening
+
+#### ✨ What's New & Changed in v1.2
+
+**Server-Side Gemini API Proxy Architecture**
+- **Zero Client-Side Credentials:** Migrated all Gemini API communications to a dedicated backend server (`server.ts`) powered by the official `@google/genai` SDK.
+- **Unified Proxy Endpoints:** Added `/api/gemini/generate` for text generation and `/api/gemini/tts` for both single-speaker and multi-speaker speech synthesis.
+- **Server-Sent Events (SSE) Streaming:** Added real-time text streaming support via Server-Sent Events.
+- **Gemini Live API WebSocket Support:** Added real-time bidirectional WebSocket transport on `/live` and `/api/live` connecting to `gemini-3.8-live`.
+- **Frictionless Experience:** Removed manual API key input fields in the user interface—the app now authenticates automatically for everyone who opens it.
+
+**Cloud Run Production & Dev Runtime Hardening**
+- **Node 22 ESM Type-Stripping:** Converted server type imports to `import type` to support clean native execution on modern Node.js versions without runtime transpile overhead.
+- **Express 5 Wildcard Routing Support:** Upgraded SPA fallback middleware to support Express 5 without path-to-regexp syntax errors.
+- **Vite Middleware & HMR Integration:** Bound Vite's development HMR directly to the parent HTTP server instance, preventing port 24678 fallback collisions.
+- **Iframe WebSocket Noise Suppression:** Added client-side error filtering to ignore harmless Vite development WebSocket disconnects in iframe preview environments.
+
+---
+
 ## Version 1.1 (October 2026)
 
 ### 🚀 Gemini 3.x Models & Audio Processing Enhancements

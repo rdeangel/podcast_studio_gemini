@@ -8,11 +8,8 @@ Welcome to Podcast Studio, a self-contained web-based application that leverages
 
   <h1>Built with AI Studio and Antigravity</h2>
 
-  <a href="https://ai.studio/apps/drive/1etRpxkEesgJEQ1h75CYtxplnWHuMEpsq?fullscreenApplet=true">Open and use with AI Studio with Free development tier (without api key)</a>
-  <p>OR</p>
-  <a href="https://github.com/rdeangel/podcast_studio_gemini/blob/main/index.html">Download and open index.html file in the browser!</a>
-  <br>(you need enter your own api key in the web app to use it from the browser)</br>
-
+  <a href="https://ai.studio/apps/drive/1etRpxkEesgJEQ1h75CYtxplnWHuMEpsq?fullscreenApplet=true">Open and use with Google AI Studio (Free development tier)</a>
+  <p>v1.2 Full-Stack Release — Seamless multi-speaker podcast generation powered by Gemini</p>
 </div>
 
 ---
@@ -140,9 +137,8 @@ Podcast Studio shuold supports the following languages for both the User Interfa
 
 3.  **Choose Your Options:**
     - **Processing Mode:** Defaults to "Multi-Speaker" for 2 speakers (faster) or "Line-by-Line" for 3+ speakers (more robust).
-    - **TTS Model:** Select **Gemini 2.5 Pro** for highest quality or **Gemini 2.5 Flash** (Faster) for quick generation.
+    - **TTS Model:** Select **Gemini 3.8 Flash TTS** (Expressive & Fast, default), **Gemini 3.8 Flash-Lite TTS**, **Gemini 2.5 Pro TTS**, or **Gemini 2.5 Flash TTS**.
     - **Audio Format:** MP3 or WAV.
-    - **API Key:** Enter your custom Google Gemini API key (optional if running in AI Studio).
 
 4.  **Create Your Podcast:**
     - Click the **Create Podcast** button.
@@ -152,36 +148,34 @@ Podcast Studio shuold supports the following languages for both the User Interfa
 5.  **Save & Share:**
     - Use the **Save/Share** button to download the generated audio file.
 
-## 🔑 API Key & Usage Environments
+## 🔐 Server-Side Architecture & Authentication
 
-This application can be run in two primary environments: within Google AI Studio or as a standalone file on your local machine.
+Starting with **v1.2**, Podcast Studio runs on a robust full-stack architecture:
 
-### Usage in Google AI Studio (Recommended)
-
--   **No API Key Required:** When you run this project inside AI Studio, it automatically uses your logged-in account's credentials.
--   **Free Tier Usage:** The API calls made by the application will count against your free tier allowance provided by Google.
-
-### Local/Standalone Usage (Client-Side)
-
--   **Single-File Architecture:** This application is contained entirely within `index.html`. All language data is embedded, so you can run it simply by double-clicking the file—no local server required.
--   **API Key is Required:** When running locally, you **must** provide your own Google Gemini API key in the "Custom API Key" input field.
+-   **Zero Client Credentials:** No manual API key input is needed in the browser UI. Anyone accessing the app can immediately generate scripts and audio without setup.
+-   **Official `@google/genai` Backend:** All Gemini model interactions are proxied through an Express backend (`server.ts`) using the official `@google/genai` SDK.
+-   **High-Performance Streaming:** Script writing and podcastifying support real-time Server-Sent Events (SSE) streaming directly from Gemini.
+-   **Gemini Live API Support:** Bidirectional WebSocket proxy on `/live` enabling interactive voice sessions with `gemini-3.8-live`.
 
 ## 🛠️ Technical Details
 
--   **Frontend:** Vanilla JavaScript, HTML, Tailwind CSS. No backend server required.
--   **AI Script Generation:** Powered by **Gemini 2.5 Flash**, **Gemini 2.5 Pro**, and **Gemini 3.0 Pro**.
--   **Audio Generation:** Powered by **Gemini 2.5 Pro TTS** and **Gemini 2.5 Flash TTS**.
--   **Audio Encoding:** Client-side MP3 encoding via `lamejs`. WAV files constructed natively.
+-   **Backend:** Node.js, Express 5, `@google/genai` SDK, WebSockets (`ws`).
+-   **Frontend:** Vanilla TypeScript/JavaScript, HTML5, Tailwind CSS, Vite.
+-   **AI Script Generation:** Powered by **Gemini 3.8 Flash**, **Gemini 3.1 Pro**, **Gemini 3.5 Flash Lite**, **Gemini 2.5 Flash**, and **Gemini 2.5 Pro**.
+-   **Audio Generation:** Powered by **Gemini 3.8 Flash TTS**, **Gemini 3.8 Flash-Lite TTS**, **Gemini 2.5 Pro TTS**, and **Gemini 2.5 Flash TTS**.
+-   **Audio Processing:** Container-safe RIFF/WAVE header demuxing, seamless 15ms boundary crossfades, natural 250ms conversational speaker pauses, client-side MP3 encoding via `lamejs`, and native WAV export.
 
 ## 📁 File Structure
 
--   `index.html`: The main application file (contains all logic and UI).
+-   `server.ts`: Express backend proxying Gemini API requests, SSE streaming, and Live API WebSockets.
+-   `index.html`: The main user interface and client layout.
+-   `index.tsx`: Client-side application logic, UI interaction, audio assembly, and API communication.
 -   `metadata.json`: Project configuration for AI Studio.
--   `README.md`: Documentation.
--   `RELEASE_NOTES.md`: Version history.
+-   `README.md`: Documentation and guide.
+-   `RELEASE_NOTES.md`: Comprehensive version history and changelog.
 -   `package.json`: Project dependencies and scripts.
--   `vite.config.ts`: Vite build configuration.
--   `tsconfig.json`: TypeScript configuration.
+-   `vite.config.ts`: Vite build and development configuration.
+-   `tsconfig.json`: TypeScript compiler configuration.
 -   `.gitignore`: Git ignore rules.
 
 
