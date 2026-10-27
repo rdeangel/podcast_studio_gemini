@@ -8,8 +8,10 @@ Welcome to Podcast Studio, a self-contained web-based application that leverages
 
   <h1>Built with AI Studio and Antigravity</h2>
 
-  <a href="https://ai.studio/apps/drive/1etRpxkEesgJEQ1h75CYtxplnWHuMEpsq?fullscreenApplet=true">Open and use with Google AI Studio (Free development tier)</a>
-  <p>v1.2 Full-Stack Release — Seamless multi-speaker podcast generation powered by Gemini</p>
+  <a href="https://ai.studio/apps/drive/1etRpxkEesgJEQ1h75CYtxplnWHuMEpsq?fullscreenApplet=true">Open and use with Google AI Studio (Free development tier, no API key required)</a>
+  <p>OR</p>
+  <a href="https://github.com/rdeangel/podcast_studio_gemini/blob/main/index.html">Download and open index.html directly in any browser (standalone file:// mode)</a>
+  <br>(Enter your own paid or personal Gemini API key in the standalone mode field when opened without a server)</br>
 </div>
 
 ---
@@ -148,14 +150,23 @@ Podcast Studio shuold supports the following languages for both the User Interfa
 5.  **Save & Share:**
     - Use the **Save/Share** button to download the generated audio file.
 
-## 🔐 Server-Side Architecture & Authentication
+## ⚡ Hybrid Architecture & Usage Environments
 
-Starting with **v1.2**, Podcast Studio runs on a robust full-stack architecture:
+Starting with **v1.3**, Podcast Studio features an intelligent **Hybrid Architecture** that automatically detects its runtime environment:
 
--   **Zero Client Credentials:** No manual API key input is needed in the browser UI. Anyone accessing the app can immediately generate scripts and audio without setup.
--   **Official `@google/genai` Backend:** All Gemini model interactions are proxied through an Express backend (`server.ts`) using the official `@google/genai` SDK.
--   **High-Performance Streaming:** Script writing and podcastifying support real-time Server-Sent Events (SSE) streaming directly from Gemini.
--   **Gemini Live API Support:** Bidirectional WebSocket proxy on `/live` enabling interactive voice sessions with `gemini-3.8-live`.
+### 1. Server-Side Mode (AI Studio / Cloud Run / Local Node Server)
+When accessed via a web host or running with the backend server (`npm run dev` / `npm start` on `localhost:3000`):
+- **Zero Client Credentials:** No API key input is displayed or needed in the browser UI. The backend authenticates automatically using the server environment variable (`GEMINI_API_KEY`).
+- **Official `@google/genai` Backend:** Requests are proxied through Express (`server.ts`) with Server-Sent Events (SSE) streaming and Gemini Live WebSockets (`/live`).
+- **Ideal For:** Team sharing, cloud hosting, AI Studio preview, and production deployments.
+
+### 2. Standalone Direct Browser Mode (`file://` or Static Hosting)
+When `index.html` is downloaded and opened directly in any browser (or hosted on a purely static file server without Node):
+- **Automatic Environment Detection:** The app detects that no backend proxy is running and automatically reveals the **Gemini API Key** field.
+- **Own Paid/Personal Gemini API Key:** Enter your own Google Gemini API key to make direct calls from your browser against your own account or billing tier.
+- **Direct Client-Side Calls:** Calls `https://generativelanguage.googleapis.com/v1beta/models/...` directly from your browser.
+- **Session Privacy:** The API key is held in memory/session storage for the current tab and is **never** written to permanent `localStorage`.
+- **Ideal For:** Offline usage, opening `index.html` directly from desktop, or hosting on static CDNs/GitHub Pages without a backend.
 
 ## 🛠️ Technical Details
 

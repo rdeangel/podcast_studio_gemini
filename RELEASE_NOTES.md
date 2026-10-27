@@ -1,5 +1,21 @@
 ### Podcast Studio Release Notes 🎙️
 
+## Version 1.3 (October 2026)
+
+### 🌐 Local Direct Browser Access with Own Paid Gemini API Key (Hybrid Mode)
+
+#### ✨ What's New & Changed in v1.3
+
+**Standalone Direct Browser Mode (`file://`)**
+- **Zero-Dependency Local Execution:** You can download `index.html` and open it directly by double-clicking in any web browser without needing to run a backend server, Node.js, or install dependencies.
+- **Bring Your Own Paid/Personal API Key:** When running locally without a server, enter your personal or paid Google Gemini API key in the automatically revealed "Gemini API Key" field to generate scripts and audio directly from your client.
+- **Smart Runtime Environment Auto-Detection:** The app detects at launch whether a backend server proxy is available (via `/api/health`). If a server is present, it operates in zero-key server mode. If opened as a local file or on static hosting, it activates standalone direct browser mode.
+- **Direct Client-Side Gemini Generation & TTS:** Executes calls directly to `https://generativelanguage.googleapis.com/v1beta/models/...` for all script writing, translation, duration adjustments, and single/multi-speaker speech synthesis.
+- **Tab-Isolated Session Security:** API keys entered in standalone mode are preserved in tab-scoped `sessionStorage` for convenience across reloads, but are **never** stored in permanent `localStorage`.
+- **Automatic Fallback:** If a remote server proxy becomes unreachable, the client gracefully switches to standalone mode, prompts for an API key, and allows uninterrupted workflow.
+
+---
+
 ## Version 1.2 (October 2026)
 
 ### 🛡️ Full-Stack Server-Side Architecture & Deployment Hardening
@@ -11,7 +27,7 @@
 - **Unified Proxy Endpoints:** Added `/api/gemini/generate` for text generation and `/api/gemini/tts` for both single-speaker and multi-speaker speech synthesis.
 - **Server-Sent Events (SSE) Streaming:** Added real-time text streaming support via Server-Sent Events.
 - **Gemini Live API WebSocket Support:** Added real-time bidirectional WebSocket transport on `/live` and `/api/live` connecting to `gemini-3.8-live`.
-- **Frictionless Experience:** Removed manual API key input fields in the user interface—the app now authenticates automatically for everyone who opens it.
+- **Frictionless Experience:** Removed manual API key input fields in the user interface for hosted deployments—the app authenticates automatically for everyone who opens it.
 
 **Cloud Run Production & Dev Runtime Hardening**
 - **Node 22 ESM Type-Stripping:** Converted server type imports to `import type` to support clean native execution on modern Node.js versions without runtime transpile overhead.
