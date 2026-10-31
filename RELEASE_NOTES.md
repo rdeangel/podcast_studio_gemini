@@ -1,18 +1,47 @@
 ### Podcast Studio Release Notes 🎙️
 
+## Version 1.4 (October 2026)
+
+### ⏱️ Configurable Request Timeout & Resilience
+
+#### ✨ What's New & Changed in v1.4
+
+**Configurable Request Timeout (30s – 300s)**
+- **Solve "This operation was aborted":** Long dialogues, rich expressions, or multi-speaker synthesis with Gemini 3.8 Flash TTS often require over 60 seconds of processing time.
+- **Interactive UI Control:** Added a dedicated **Request Timeout** dropdown selector in the primary settings bar with presets from 30s up to 300s (5 minutes), defaulting to 120s.
+- **End-to-End Propagation:** Configured timeouts are automatically persisted in `localStorage` (`podcast_settings_timeout_seconds`), passed via `x-timeout-seconds` / request body to the backend proxy client, and applied to direct browser calls.
+- **Server Environment Variable Support:** Server hosts can also set `GEMINI_TIMEOUT_SECONDS` (e.g. `GEMINI_TIMEOUT_SECONDS=180`) to customize system-wide defaults.
+- **Actionable Timeout Recovery:** Distinguishes explicit user cancellation from network/server timeouts, with actionable one-click suggestions to increase the Request Timeout setting or switch to Line-by-Line mode.
+
+---
+
 ## Version 1.3 (October 2026)
 
-### 🌐 Local Direct Browser Access with Own Paid Gemini API Key (Hybrid Mode)
+### 🌐 Hybrid Execution & Custom Paid Gemini API Key Support
 
 #### ✨ What's New & Changed in v1.3
 
+**Universal Custom / Paid Gemini API Key Option**
+- **Bypass Free-Tier Quotas & High Demand:** You can now enter your own paid or personal Google Gemini API key directly within the app—even when running inside AI Studio or Cloud Run.
+- **Header & Body Forwarding:** When a custom API key is supplied, client requests forward the key via the `x-gemini-api-key` header to the backend proxy, overriding the shared server key and routing requests directly to your personal quota.
+- **Dynamic Badge Status:** The UI displays a live status badge:
+  - 🟢 `AI Studio Ready (Free Tier)`: Zero-config operation using shared development credentials.
+  - 🟡 `Using Custom Paid Key (Active)`: Using your personal key for high-throughput generation and Pro models.
+  - 🔵 `Standalone Mode (Key Required)`: When running directly from a local browser file without a server.
+- **Convenient Key Management:** Includes real-time Show/Hide toggle, Clear button, and secure tab-isolated `sessionStorage` caching (never persisted to permanent storage).
+
+**Resilient Response Handling & JSON Parsing Fix**
+- **Eliminated `JSON.parse` Crash:** Fixed an issue where upstream rate-limit (429) or high-demand (503) errors returned HTML error pages from reverse proxies, triggering `Script generation failed: JSON.parse: unexpected character at line 1 column 1`.
+- **Safe JSON Parsing:** Added `safeParseJsonResponse` on the client and standardized server error payloads with actionable contextual suggestions (e.g. recommending Gemini 3.5 Flash or entering a paid key).
+
+**Updated Gemini Model Suite**
+- **Default to Gemini 3.5 Flash:** Set **Gemini 3.5 Flash** and **Gemini 3.5 Flash Lite** as default script generation models for instant, dependable generation without 503 load spikes.
+- **Deprecated Legacy 2.5 Models:** Retired `gemini-2.5-flash` and `gemini-2.5-pro` (which returned 404 "no longer available to new users"). Legacy requests are transparently mapped to Gemini 3.5 Flash and Gemini 3.1 Pro.
+- **Pro & Reasoning Guidance:** Clearly labeled **Gemini 3.8 Flash** (best with personal paid key during peak hours) and **Gemini 3.1 Pro** (requires billing/paid key).
+
 **Standalone Direct Browser Mode (`file://`)**
-- **Zero-Dependency Local Execution:** You can download `index.html` and open it directly by double-clicking in any web browser without needing to run a backend server, Node.js, or install dependencies.
-- **Bring Your Own Paid/Personal API Key:** When running locally without a server, enter your personal or paid Google Gemini API key in the automatically revealed "Gemini API Key" field to generate scripts and audio directly from your client.
-- **Smart Runtime Environment Auto-Detection:** The app detects at launch whether a backend server proxy is available (via `/api/health`). If a server is present, it operates in zero-key server mode. If opened as a local file or on static hosting, it activates standalone direct browser mode.
-- **Direct Client-Side Gemini Generation & TTS:** Executes calls directly to `https://generativelanguage.googleapis.com/v1beta/models/...` for all script writing, translation, duration adjustments, and single/multi-speaker speech synthesis.
-- **Tab-Isolated Session Security:** API keys entered in standalone mode are preserved in tab-scoped `sessionStorage` for convenience across reloads, but are **never** stored in permanent `localStorage`.
-- **Automatic Fallback:** If a remote server proxy becomes unreachable, the client gracefully switches to standalone mode, prompts for an API key, and allows uninterrupted workflow.
+- **Zero-Dependency Local Execution:** You can download `index.html` and open it directly in any browser without needing to run a backend server or install npm dependencies.
+- **Smart Runtime Environment Auto-Detection:** Automatically tests for `/api/health` at startup to determine whether to route requests through the server proxy or call Google's Generative Language API directly.
 
 ---
 
